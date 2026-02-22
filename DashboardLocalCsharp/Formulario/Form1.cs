@@ -104,7 +104,7 @@ namespace Formulario
         {
             // Click en boton para dspegar
             // Llamada no bloqueante para no bloquear el formulario
-            dron.Despegar(int.Parse(alturaBox.Text), bloquear: false, EnAire, "Volando");
+            dron.Despegar(alturatrackBar.Value, bloquear: false, EnAire, "Volando");
             despegarBtn.BackColor = Color.Yellow;
         }
 
@@ -148,26 +148,41 @@ namespace Formulario
         {
 
             dron.EnviarDatosTelemetria(ProcesarTelemetria);
+            //PedirEstadoBateria();
         }
 
         private void detenerTelemetriaBtn_Click(object sender, EventArgs e)
         {
             dron.DetenerDatosTelemetria();
         }
+        //private void PedirEstadoBateria()
+        //{
+        //    dron.EnviarDatosTelemetria((id, telemetria) =>
+        //    {
+        //        // Buscar por nombre primero
+        //        var entradaBateria = telemetria.FirstOrDefault(t => t.nombre == "bateria");
+        //        float valorBateria = entradaBateria != default ? entradaBateria.valor
+        //                            : (telemetria.Count > 4 ? telemetria[4].valor : float.NaN);
 
+        //        BeginInvoke((Action)(() =>
+        //        {
+        //            bateriaLbl.Text = float.IsNaN(valorBateria) ? "N/D" : ((int)valorBateria) + "%";
+        //        }));
+
+        //        dron.DetenerDatosTelemetria();
+        //    });
+        //}
         private void ProcesarTelemetria(byte id, List<(string nombre, float valor)> telemetria)
         {
             // Aqui vendre cada vez que llegue un paquete de telemetría
             double lat = ((double)telemetria[1].valor) / 0.1E+8;
             double lon = ((double)telemetria[2].valor) / 0.1E+8;
             double heading = ((double)telemetria[3].valor) / 100;
-
             // Coloco los datos de telemetria en su sitio
             altitudLbl.Text = telemetria[0].valor.ToString();
             latitudLbl.Text = lat.ToString();
             longitudLbl.Text = lon.ToString();
             headLbl.Text = heading.ToString();
-
         }
         private void headingTrackBar_Scroll(object sender, EventArgs e)
         {
@@ -206,6 +221,20 @@ namespace Formulario
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void alturatrackBar_Scroll(object sender, EventArgs e)
+        {
+            int n = alturatrackBar.Value;
+            alturalbl.Text = n.ToString();
+        }
+
+        private void irPuntoBtn_Click(object sender, EventArgs e)
+        {
+            dron.IrAlPunto(
+                float.Parse(latmovBox.Text), 
+                float.Parse(longmovBox.Text), 
+                float.Parse(longmovBox.Text),true);
         }
     }
 }
