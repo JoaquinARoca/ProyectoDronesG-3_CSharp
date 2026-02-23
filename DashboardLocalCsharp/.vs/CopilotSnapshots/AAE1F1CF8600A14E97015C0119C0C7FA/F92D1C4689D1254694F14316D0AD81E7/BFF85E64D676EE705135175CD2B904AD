@@ -148,23 +148,30 @@ namespace Formulario
         {
 
             dron.EnviarDatosTelemetria(ProcesarTelemetria);
-            //dron.EnviarDatosTelemetria(ProcesarEstadoBateria);
+            //PedirEstadoBateria();
         }
 
         private void detenerTelemetriaBtn_Click(object sender, EventArgs e)
         {
             dron.DetenerDatosTelemetria();
         }
-        
-        private void ProcesarEstadoBateria(byte id, List<(string nombre, float valor)> telemetria) {
-            foreach (var t in telemetria)
-            {
-                if (t.nombre == "Batery") {
-                    bateriaLbl.Text = t.valor.ToString();
-                    break;
-                }
-            }
-        }
+        //private void PedirEstadoBateria()
+        //{
+        //    dron.EnviarDatosTelemetria((id, telemetria) =>
+        //    {
+        //        // Buscar por nombre primero
+        //        var entradaBateria = telemetria.FirstOrDefault(t => t.nombre == "bateria");
+        //        float valorBateria = entradaBateria != default ? entradaBateria.valor
+        //                            : (telemetria.Count > 4 ? telemetria[4].valor : float.NaN);
+
+        //        BeginInvoke((Action)(() =>
+        //        {
+        //            bateriaLbl.Text = float.IsNaN(valorBateria) ? "N/D" : ((int)valorBateria) + "%";
+        //        }));
+
+        //        dron.DetenerDatosTelemetria();
+        //    });
+        //}
         private void ProcesarTelemetria(byte id, List<(string nombre, float valor)> telemetria)
         {
             // Aqui vendre cada vez que llegue un paquete de telemetría
@@ -224,11 +231,10 @@ namespace Formulario
 
         private void irPuntoBtn_Click(object sender, EventArgs e)
         {
-            //dron.IrAlPunto(
-            //    float.Parse(latmovBox.Text), 
-            //    float.Parse(longmovBox.Text), 
-            //    float.Parse(longmovBox.Text),true);
-            dron.IrAlPunto(42, 2, 20);
+            dron.IrAlPunto(
+                float.Parse(latmovBox.Text), 
+                float.Parse(longmovBox.Text), 
+                float.Parse(longmovBox.Text),true);
         }
     }
 }
