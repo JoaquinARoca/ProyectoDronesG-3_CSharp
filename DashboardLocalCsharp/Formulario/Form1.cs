@@ -14,6 +14,8 @@ namespace Formulario
     public partial class Form1 : Form
     {
         Dron dron = new Dron();
+        private double currentLatDeg = double.NaN;
+        private double currentLonDeg = double.NaN;
         public Form1()
         {
             InitializeComponent();
@@ -82,6 +84,8 @@ namespace Formulario
             button17.Click += navButton_Click;
             button17.Font = letraGrande;
 
+            
+
         }
 
         private void but_connect_Click(object sender, EventArgs e)
@@ -102,10 +106,18 @@ namespace Formulario
 
         private void but_takeoff_Click(object sender, EventArgs e)
         {
-            // Click en boton para dspegar
+             // Click en boton para dspegar
             // Llamada no bloqueante para no bloquear el formulario
-            dron.Despegar(int.Parse(alturaBox.Text), bloquear: false, EnAire, "Volando");
-            despegarBtn.BackColor = Color.Yellow;
+
+            int alturaSeleccionada = AlturatrackBar.Value;
+            if (alturaSeleccionada != 0) {
+                dron.Despegar(AlturatrackBar.Value, bloquear: false, EnAire, "Volando");
+                despegarBtn.BackColor = Color.Yellow;
+            }
+            else
+            {
+                MessageBox.Show("Selecciona una altura de despegue mayor que 0");
+            }
         }
 
         private void navButton_Click(object sender, EventArgs e)
@@ -148,26 +160,46 @@ namespace Formulario
         {
 
             dron.EnviarDatosTelemetria(ProcesarTelemetria);
+
+            dron.EnviarDatosNivelBateria(ProcesarNivelBateria);
         }
 
         private void detenerTelemetriaBtn_Click(object sender, EventArgs e)
         {
             dron.DetenerDatosTelemetria();
+            dron.DetenerDatosNivelBateria();
         }
 
         private void ProcesarTelemetria(byte id, List<(string nombre, float valor)> telemetria)
         {
-            // Aqui vendre cada vez que llegue un paquete de telemetría
+            // Aqui vendrá cada vez que llegue un paquete de telemetría
             double lat = ((double)telemetria[1].valor) / 0.1E+8;
             double lon = ((double)telemetria[2].valor) / 0.1E+8;
             double heading = ((double)telemetria[3].valor) / 100;
+
+            // store latest GPS for altitude changes
+            currentLatDeg = lat;
+            currentLonDeg = lon;
 
             // Coloco los datos de telemetria en su sitio
             altitudLbl.Text = telemetria[0].valor.ToString();
             latitudLbl.Text = lat.ToString();
             longitudLbl.Text = lon.ToString();
             headLbl.Text = heading.ToString();
+        }
 
+        private void ProcesarNivelBateria(byte id, List<(string nombre, float valor)> telemetria)
+        {
+            var rem = telemetria.FirstOrDefault(t => string.Equals(t.nombre, "remaining", StringComparison.OrdinalIgnoreCase));
+            string batteryText = "N/A";
+            if (rem.nombre != null)
+            {
+                // remaining is an int percent (0..100)
+                batteryText = rem.valor >= 0 ? rem.valor.ToString("F0") + " %" : "N/A";
+            }
+
+            // Update UI (reuse ModeLbl or use a dedicated label)
+            BatteryLbl.Text = batteryText;
         }
         private void headingTrackBar_Scroll(object sender, EventArgs e)
         {
@@ -202,8 +234,44 @@ namespace Formulario
             dron.CambiaVelocidad(valorSeleccionado);
         }
 
+        private void Alt_changeTrackBar_MouseUp(object sender, MouseEventArgs e)
+        {
+            int nuevoAlt = Alt_changeTrackBar.Value;
+
+            if (double.IsNaN(currentLatDeg) || double.IsNaN(currentLonDeg))
+            {
+                MessageBox.Show("No hay posición GPS disponible aún. Espera a recibir telemetría.");
+                return;
+            }
+
+            // IrAlPunto espera (lat, lon, alt) en unidades grados/meters
+            dron.IrAlPunto((float)currentLatDeg, (float)currentLonDeg, nuevoAlt, bloquear: false);
+        }
+
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AlturatrackBar_Scroll(object sender, EventArgs e)
+        {
+            int n = AlturatrackBar.Value;
+            AlturaLbl.Text = n.ToString();
+        }
+
+        private void AlturaLbl_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Alt_changeTrackBar_Scroll(object sender, EventArgs e)
+        {
+            int n = Alt_changeTrackBar.Value;
+            AltChangeLbl.Text = n.ToString();
+        }
+
+        private void AltChangeLbl_Click(object sender, EventArgs e)
         {
 
         }
