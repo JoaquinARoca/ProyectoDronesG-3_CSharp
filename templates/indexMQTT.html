@@ -106,6 +106,13 @@
                     botonDespegar.classList.add('boton-verde');
                 }
 
+                if (esatdo === "landed") {
+                    const botonAterrizar = document.getElementById('botonAterrizar');
+                    botonAterrizar.classList.remove('boton-amarillo');
+                    botonAterrizar.classList.add('boton-verde');
+
+                }
+
                 document.getElementById("altitudValor").innerText = alt.toFixed(2);
             }
         });
@@ -128,6 +135,10 @@
 
         function aterrizarDron() {
             client.publish('mobileFlask/autopilotServiceDemo/Land');
+
+            const botonAterrizar = document.getElementById('botonAterrizar');
+            botonAterrizar.classList.remove('boton-verde');
+            botonAterrizar.classList.add('boton-amarillo');
         }
 
         function moverDron(direction) {
