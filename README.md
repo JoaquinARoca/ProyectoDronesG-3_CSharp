@@ -1,6 +1,6 @@
 # Guía para el proyecto de drones   
  
-## 1. Introducción   
+## 1. Introducción  
 
 El proceso que se describe en esta guía tiene por objetivo el desarrollo de una aplicación de control de un dron (o varios) que pueda demostrarse en el DroneLab del Campus del Baix Llobregat. Esta aplicación se desarrollará en equipos de 3 o 4 personas.
 El proceso permite el aprendizaje de una variedad de conceptos, tecnologías y herramientas. En particular, se aprende (entre otras cosas):   

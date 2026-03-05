@@ -287,6 +287,7 @@ def moto ():
 
 def crear_ventana():
     global dron
+
     global  altShowLbl, headingShowLbl,  speedSldr, gradesSldr, stateShowLbl
     global connectBtn, armBtn, takeOffBtn, landBtn, RTLBtn
     global previousBtn # aqui guardaré el ultimo boton de navegación clicado
