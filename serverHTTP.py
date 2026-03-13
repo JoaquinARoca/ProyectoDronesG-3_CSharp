@@ -10,13 +10,14 @@ import paho.mqtt.client as mqtt
 from threading import Lock
 
 # CONFIGURACIÓN
+usuario = "elies"
 MQTT_BROKER = "broker.hivemq.com"   # cambia si quieres otro broker
 MQTT_PORT = 1883
 MQTT_KEEPALIVE = 60
 
 # Topics (ajusta si tus tópicos son distintos)
-TOPIC_PREFIX_PUB = "mobileFlask/autopilotServiceDemo"        # donde publicamos comandos
-TOPIC_TELEMETRY_SUB = "autopilotServiceDemo/mobileFlask/telemetryInfo"  # donde viene telemetría
+TOPIC_PREFIX_PUB = f"{usuario}/autopilotServiceDemo"        # donde publicamos comandos
+TOPIC_TELEMETRY_SUB = f"autopilotServiceDemo/{usuario}/telemetryInfo"  # donde viene telemetría
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
@@ -28,7 +29,7 @@ telemetry = {
 telemetry_lock = Lock()
 
 # --- MQTT client setup ---
-mqtt_client = mqtt.Client(client_id="http_gateway_" + str(int(time.time())))
+mqtt_client = mqtt.Client(client_id=f"http_gateway_{usuario}" )
 # Si tu broker requiere username/password:
 # mqtt_client.username_pw_set("user", "pass")
 

@@ -66,6 +66,7 @@
     </div>
 
     <script>
+        const usuario = "elies"
         var despegueIniciado = false;
         var aterrizajeIniciado = false;
         var rtlIniciado = false;
@@ -73,12 +74,12 @@
         const client = mqtt.connect('ws://broker.hivemq.com:8000/mqtt', {
             clean: false,
             keepalive: 60,
-            clientId: 'webapp_' + Math.random().toString(16).substr(2, 8),
+            clientId: 'webapp_' + usuario + Math.random().toString(16).substr(2, 8),
         });
 
         client.on('connect', () => {
             console.log('Conectado');
-            client.subscribe('autopilotServiceDemo/mobileFlask/#');
+            client.subscribe('autopilotServiceDemo/' + usuario + '/#');
         });
 
         client.on('message', (topic, message) => {
@@ -119,9 +120,9 @@
         });
 
         function conectarDron() {
-            client.publish('mobileFlask/autopilotServiceDemo/connect', "");
+            client.publish(usuario + '/autopilotServiceDemo/connect', "");
             document.getElementById('botonConectar').classList.add('boton-verde');
-            client.publish('mobileFlask/autopilotServiceDemo/startTelemetry', "");
+            client.publish(usuario+'/autopilotServiceDemo/startTelemetry', "");
         }
 
         function despegarDron() {
@@ -129,7 +130,7 @@
             if (alturaInput) {
                 // SOLUCIÓN AL PROBLEMA DE LOS 5M:
                 // Aseguramos que el valor sea un string numérico limpio
-                client.publish('mobileFlask/autopilotServiceDemo/arm_takeOff', String(alturaInput));
+                client.publish(usuario +'/autopilotServiceDemo/arm_takeOff', String(alturaInput));
 
                 despegueIniciado = true;
                 document.getElementById('botonDespegar').classList.add('boton-amarillo');
@@ -140,26 +141,26 @@
         }
 
         function aterrizarDron() {
-            client.publish('mobileFlask/autopilotServiceDemo/Land', "");
+            client.publish(usuario +'/autopilotServiceDemo/Land', "");
             aterrizajeIniciado = true;
             document.getElementById('botonAterrizar').classList.add('boton-amarillo');
             document.getElementById('botonDespegar').classList.remove('boton-verde', 'boton-amarillo');
         }
 
         function rtlDron() {
-            client.publish('mobileFlask/autopilotServiceDemo/RTL', "");
+            client.publish(usuario +'/autopilotServiceDemo/RTL', "");
             rtlIniciado = true;
             document.getElementById('botonRTL').classList.add('boton-amarillo');
             document.getElementById('botonDespegar').classList.remove('boton-verde', 'boton-amarillo');
         }
 
         function moverDron(direction) {
-            client.publish('mobileFlask/autopilotServiceDemo/go', direction);
+            client.publish(usuario +'/autopilotServiceDemo/go', direction);
         }
 
         function cambiarHeading(val) {
             // Publicar al topic exacto que espera el servicio
-            client.publish('mobileFlask/autopilotServiceDemo/changeHeading', String(val));
+            client.publish(usuario +'/autopilotServiceDemo/changeHeading', String(val));
             document.getElementById('headingVal').innerText = val;
         }
     </script>

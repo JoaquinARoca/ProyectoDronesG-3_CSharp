@@ -23,3 +23,15 @@ C:\UPC\4B\PD\CLASSE\V1\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\
 C:\UPC\4B\PD\CLASSE\V1\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.Up2Date
 C:\UPC\4B\PD\CLASSE\V1\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.exe
 C:\UPC\4B\PD\CLASSE\V1\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.pdb
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.exe.config
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.exe
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.pdb
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\bin\Debug\csDronLink.dll
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.AssemblyReference.cache
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.Form1.resources
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.Properties.Resources.resources
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.GenerateResource.cache
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.CoreCompileInputs.cache
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.Up2Date
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.exe
+C:\UPC\4B\PD\CLASSE\V1_elies\ProyectoDronesG-3_Python\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.pdb

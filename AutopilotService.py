@@ -6,6 +6,8 @@ import paho.mqtt.client as mqtt
 import json
 from dronLink.Dron import Dron
 
+usuario = "elies"
+
 # esta función sirve para publicar los eventos resultantes de las acciones solicitadas
 def publish_event (event):
     global sending_topic, client
@@ -86,7 +88,7 @@ def on_connect(client, userdata, flags, rc):
 
 dron = Dron()
 
-client = mqtt.Client("autopilotServiceDemo", transport="websockets")
+client = mqtt.Client(f"Servicio_{usuario}", transport="websockets")
 
 # me conecto al broker publico y gratuito
 broker_address = "broker.hivemq.com"
@@ -97,7 +99,7 @@ client.on_connect = on_connect
 client.connect (broker_address,broker_port)
 
 # me subscribo a todos los mensajes cuyo destino sea este servicio
-client.subscribe('+/autopilotServiceDemo/#')
-print ('AutopilotServiceDemo esperando peticiones')
+client.subscribe(f'{usuario}/autopilotServiceDemo/#')
+print (f'AutopilotServiceDemo esperando peticiones de {usuario}')
 client.loop_forever()
 
