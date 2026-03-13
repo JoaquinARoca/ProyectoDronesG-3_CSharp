@@ -7,111 +7,102 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using csDronLink;
+using MQTTnet;
+using MQTTnet.Client;
+using System.Text.Json; // Para procesar la telemetría
 
 namespace Formulario
 {
     public partial class Form1 : Form
     {
-        Dron dron = new Dron();
+        // 1. Instancia global de nuestro cliente MQTT
+        private IMqttClient mqttClient;
+        private string origen = "elies"; // El nombre de tu app
+
         private double currentLatDeg = double.NaN;
         private double currentLonDeg = double.NaN;
+
         public Form1()
         {
             InitializeComponent();
-            // No queremos que nos molesten con la excepción Cross-Threading
             CheckForIllegalCrossThreadCalls = false;
-            // Configuramos los 9 botones de movimiento. Todos ellos tendrán asociada la misma función
-            // para gestionar el evento click, pero en el tag ponemos la palabra que identifica la dirección 
-            // del movimiento, que es la palabra que hay que pasarle como parámetro al dron para que haga la
-            // operación. El texto es el código de una flechita que representa la dirección del movimineto.
 
             Font letraGrande = new Font("Arial", 14);
             Font letraPequeña = new Font("Arial", 12);
 
-            // Ahora configuramos los botones de navegación
+            // Botones de navegación
+            button9.Text = "NW"; button9.Tag = "NorthWest"; button9.Click += navButton_Click; button9.Font = letraGrande;
+            button10.Text = "N"; button10.Tag = "North"; button10.Click += navButton_Click; button10.Font = letraGrande;
+            button11.Text = "NE"; button11.Tag = "NorthEast"; button11.Click += navButton_Click; button11.Font = letraGrande;
+            button12.Text = "W"; button12.Tag = "West"; button12.Click += navButton_Click; button12.Font = letraGrande;
+            button13.Text = "Stop"; button13.Tag = "Stop"; button13.Click += navButton_Click; button13.Font = letraPequeña;
+            button14.Text = "E"; button14.Tag = "East"; button14.Click += navButton_Click; button14.Font = letraGrande;
+            button15.Text = "SW"; button15.Tag = "SouthWest"; button15.Click += navButton_Click; button15.Font = letraGrande;
+            button16.Text = "S"; button16.Tag = "South"; button16.Click += navButton_Click; button16.Font = letraGrande;
+            button17.Text = "SE"; button17.Tag = "SouthEast"; button17.Click += navButton_Click; button17.Font = letraGrande;
+        }
 
-            button9.Text = "NW";
-            button9.Tag = "NorthWest";
-            button9.Click += navButton_Click;
-            button9.Font = letraGrande;
+        private async void Form1_Load(object sender, EventArgs e)
+        {
+            // 2. Configurar y conectar MQTTnet al iniciar el formulario
+            var mqttFactory = new MqttFactory();
+            mqttClient = mqttFactory.CreateMqttClient();
 
+            // Configuramos conexión por WebSockets (puerto 8000)
+            var mqttClientOptions = new MqttClientOptionsBuilder()
+                .WithWebSocketServer("broker.hivemq.com:8000/mqtt")
+                .Build();
 
-            button10.Text = "N";
-            button10.Tag = "North";
-            button10.Click += navButton_Click;
-            button10.Font = letraGrande;
+            // Configurar qué hacer cuando se recibe un mensaje
+            mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
 
+            try
+            {
+                await mqttClient.ConnectAsync(mqttClientOptions);
 
-            button11.Text = "NE";
-            button11.Tag = "NorthEast";
-            button11.Click += navButton_Click;
-            button11.Font = letraGrande;
+                // Suscribirse a los tópicos de respuesta desde Python
+                var subscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
+                    .WithTopicFilter(f => f.WithTopic($"autopilotServiceDemo/{origen}/#"))
+                    .Build();
 
+                await mqttClient.SubscribeAsync(subscribeOptions);
+                Console.WriteLine("Conectado a MQTT y suscrito con éxito.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error conectando al broker MQTT: " + ex.Message);
+            }
+        }
 
-            button12.Text = "W";
-            button12.Tag = "West";
-            button12.Click += navButton_Click;
-            button12.Font = letraGrande;
+        // =========================================================
+        // ENVÍO DE MENSAJES AL DRON (PUBLICADORES)
+        // =========================================================
 
+        private async void PublicarMensaje(string comando, string payload = "")
+        {
+            if (mqttClient == null || !mqttClient.IsConnected) return;
 
-            button13.Text = "Stop";
-            button13.Tag = "Stop";
-            button13.Click += navButton_Click;
-            button13.Font = letraPequeña;
+            string topic = $"{origen}/autopilotServiceDemo/{comando}";
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(payload)
+                .Build();
 
-
-            button14.Text = "E";
-            button14.Tag = "East";
-            button14.Click += navButton_Click;
-            button14.Font = letraGrande;
-
-
-            button15.Text = "SW";
-            button15.Tag = "SouthWest";
-            button15.Click += navButton_Click;
-            button15.Font = letraGrande;
-
-
-            button16.Text = "S";
-            button16.Tag = "South";
-            button16.Click += navButton_Click;
-            button16.Font = letraGrande;
-
-
-            button17.Text = "SE";
-            button17.Tag = "SouthEast";
-            button17.Click += navButton_Click;
-            button17.Font = letraGrande;
-
-            
-
+            await mqttClient.PublishAsync(message);
         }
 
         private void but_connect_Click(object sender, EventArgs e)
         {
-            dron.Conectar("simulacion");
-            but_connect.BackColor = Color.Green;
-            but_connect.ForeColor = Color.White;
-        }
-
-
-        private void EnAire(byte id, object param)
-        {
-            // Esto es lo que haré cuando el dron haya alcanzado la altura de despegue
-            despegarBtn.BackColor = Color.Green;
-            despegarBtn.ForeColor = Color.White;
-            despegarBtn.Text = (string)param;
+            PublicarMensaje("connect");
+            but_connect.BackColor = Color.Yellow; // Cambia a verde cuando Python confirme
         }
 
         private void but_takeoff_Click(object sender, EventArgs e)
         {
-             // Click en boton para dspegar
-            // Llamada no bloqueante para no bloquear el formulario
-
             int alturaSeleccionada = AlturatrackBar.Value;
-            if (alturaSeleccionada != 0) {
-                dron.Despegar(AlturatrackBar.Value, bloquear: false, EnAire, "Volando");
+            if (alturaSeleccionada != 0)
+            {
+                PublicarMensaje("arm_takeOff", alturaSeleccionada.ToString());
                 despegarBtn.BackColor = Color.Yellow;
             }
             else
@@ -122,158 +113,132 @@ namespace Formulario
 
         private void navButton_Click(object sender, EventArgs e)
         {
-            // Aqui vendremos cuando se clique cualquiera de los botones de navagación
-            // En el tag del boton tenemos la dirección de navegación.
             Button b = (Button)sender;
             string tag = b.Tag.ToString();
-            dron.Navegar(tag);
-
+            PublicarMensaje("go", tag);
         }
-
-        private void EnTierra(byte id, object mensaje)
-        {
-            // Aqui vendre cuando el dron esté en tierra
-            // El mensaje me dice si vengo de un aterrizaje o de un RTL
-            if ((string)mensaje == "Aterrizaje")
-                button7.BackColor = Color.Green;
-            else
-                button6.BackColor = Color.Green;
-        }
-
-
 
         private void aterrizarBtn_Click(object sender, EventArgs e)
         {
-            // Click en el botón de aterrizar
-            dron.Aterrizar(bloquear: false, EnTierra, "Aterrizaje");
+            PublicarMensaje("Land");
             button7.BackColor = Color.Yellow;
         }
 
         private void RTLBtn_Click(object sender, EventArgs e)
         {
-            // Click en el botón de RTL
-            dron.RTL(bloquear: false, EnTierra, "RTL");
+            PublicarMensaje("RTL");
             button6.BackColor = Color.Yellow;
         }
 
         private void enviarTelemetriaBtn_Click(object sender, EventArgs e)
         {
-
-            dron.EnviarDatosTelemetria(ProcesarTelemetria);
-
-            dron.EnviarDatosNivelBateria(ProcesarNivelBateria);
+            PublicarMensaje("startTelemetry");
         }
 
         private void detenerTelemetriaBtn_Click(object sender, EventArgs e)
         {
-            dron.DetenerDatosTelemetria();
-            dron.DetenerDatosNivelBateria();
+            PublicarMensaje("stopTelemetry");
         }
-
-        private void ProcesarTelemetria(byte id, List<(string nombre, float valor)> telemetria)
-        {
-            // Aqui vendrá cada vez que llegue un paquete de telemetría
-            double lat = ((double)telemetria[1].valor) / 0.1E+8;
-            double lon = ((double)telemetria[2].valor) / 0.1E+8;
-            double heading = ((double)telemetria[3].valor) / 100;
-
-            // store latest GPS for altitude changes
-            currentLatDeg = lat;
-            currentLonDeg = lon;
-
-            // Coloco los datos de telemetria en su sitio
-            altitudLbl.Text = telemetria[0].valor.ToString();
-            latitudLbl.Text = lat.ToString();
-            longitudLbl.Text = lon.ToString();
-            headLbl.Text = heading.ToString();
-        }
-
-        private void ProcesarNivelBateria(byte id, List<(string nombre, float valor)> telemetria)
-        {
-            var rem = telemetria.FirstOrDefault(t => string.Equals(t.nombre, "remaining", StringComparison.OrdinalIgnoreCase));
-            string batteryText = "N/A";
-            if (rem.nombre != null)
-            {
-                // remaining is an int percent (0..100)
-                batteryText = rem.valor >= 0 ? rem.valor.ToString("F0") + " %" : "N/A";
-            }
-
-            // Update UI (reuse ModeLbl or use a dedicated label)
-            BatteryLbl.Text = batteryText;
-        }
-        private void headingTrackBar_Scroll(object sender, EventArgs e)
-        {
-            // Recojo el valor del heading seleccionado
-            int n = headingTrackBar.Value;
-            headingLbl.Text = n.ToString();
-        }
-
 
         private void headingTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
-            // Cuando se libera la barra de desplazamiento recojo el valor
-            // definitivo para el heading y lo envío al dron
-            float valorSeleccionado = headingTrackBar.Value;
-            dron.CambiarHeading(valorSeleccionado, bloquear: false);
-        }
-
-        private void velocidadTrackBar_Scroll(object sender, EventArgs e)
-        {
-            // Recojo y muestro el valor la velocidad según se mueve 
-            // la barra de desplazamiento
-            int n = velocidadTrackBar.Value;
-            velocidadLbl.Text = n.ToString();
-
+            PublicarMensaje("changeHeading", headingTrackBar.Value.ToString());
         }
 
         private void velocidadTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
-            // Cuando se libera la barra de desplazamiento recojo el valor
-            // definitivo para la velocidad y lo envío al dron
-            int valorSeleccionado = velocidadTrackBar.Value;
-            dron.CambiaVelocidad(valorSeleccionado);
+            PublicarMensaje("changeNavSpeed", velocidadTrackBar.Value.ToString());
         }
 
         private void Alt_changeTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
-            int nuevoAlt = Alt_changeTrackBar.Value;
+            // Nota: He modificado esto porque en Python no tienes un "IrAlPunto". 
+            // He creado el comando "changeAltitude" que deberás añadir a tu script de Python.
+            PublicarMensaje("changeAltitude", Alt_changeTrackBar.Value.ToString());
+        }
 
-            if (double.IsNaN(currentLatDeg) || double.IsNaN(currentLonDeg))
+        // =========================================================
+        // EVENTOS DE INTERFAZ (UI LABELS Y SCROLLS)
+        // =========================================================
+
+        private void headingTrackBar_Scroll(object sender, EventArgs e) => headingLbl.Text = headingTrackBar.Value.ToString();
+        private void velocidadTrackBar_Scroll(object sender, EventArgs e) => velocidadLbl.Text = velocidadTrackBar.Value.ToString();
+        private void AlturatrackBar_Scroll(object sender, EventArgs e) => AlturaLbl.Text = AlturatrackBar.Value.ToString();
+        private void Alt_changeTrackBar_Scroll(object sender, EventArgs e) => AltChangeLbl.Text = Alt_changeTrackBar.Value.ToString();
+        private void AlturaLbl_Click(object sender, EventArgs e) { }
+        private void AltChangeLbl_Click(object sender, EventArgs e) { }
+
+        // =========================================================
+        // RECEPCIÓN DE MENSAJES DESDE EL DRON (SUSCRIPTORES)
+        // =========================================================
+
+        private Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
+        {
+            string topic = e.ApplicationMessage.Topic;
+            string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload ?? Array.Empty<byte>());
+
+            // Utilizamos Invoke para evitar el error de "Cross-Thread" al actualizar la UI
+            this.Invoke((MethodInvoker)delegate
             {
-                MessageBox.Show("No hay posición GPS disponible aún. Espera a recibir telemetría.");
-                return;
+                // Extraemos el final del tópico (ej: "connected", "telemetryInfo", etc.)
+                string ev = topic.Split('/').Last();
+
+                switch (ev)
+                {
+                    case "connected":
+                        but_connect.BackColor = Color.Green;
+                        but_connect.ForeColor = Color.White;
+                        break;
+
+                    case "flying": // Evento cuando termina de despegar
+                        despegarBtn.BackColor = Color.Green;
+                        despegarBtn.ForeColor = Color.White;
+                        despegarBtn.Text = "Volando";
+                        break;
+
+                    case "landed": // Evento cuando aterriza
+                        button7.BackColor = Color.Green;
+                        break;
+
+                    case "atHome": // Evento de RTL
+                        button6.BackColor = Color.Green;
+                        break;
+
+                    case "telemetryInfo":
+                        ProcesarTelemetriaJson(payload);
+                        break;
+                }
+            });
+
+            return Task.CompletedTask;
+        }
+
+        private void ProcesarTelemetriaJson(string jsonPayload)
+        {
+            // Este método asume que Python envía la telemetría como JSON
+            // Deberás ajustarlo si la estructura JSON que envía Python es diferente.
+            try
+            {
+                using (JsonDocument doc = JsonDocument.Parse(jsonPayload))
+                {
+                    var root = doc.RootElement;
+
+                    // Asegúrate de que los nombres coincidan con los que envía Python (ej. "lat", "lon", "heading")
+                    if (root.TryGetProperty("lat", out JsonElement latEl)) currentLatDeg = latEl.GetDouble();
+                    if (root.TryGetProperty("lon", out JsonElement lonEl)) currentLonDeg = lonEl.GetDouble();
+
+                    if (root.TryGetProperty("alt", out JsonElement altEl)) altitudLbl.Text = altEl.GetDouble().ToString();
+                    if (root.TryGetProperty("heading", out JsonElement headEl)) headLbl.Text = headEl.GetDouble().ToString();
+                    if (root.TryGetProperty("battery", out JsonElement batEl)) BatteryLbl.Text = batEl.GetDouble().ToString("F0") + " %";
+
+                    latitudLbl.Text = currentLatDeg.ToString();
+                    longitudLbl.Text = currentLonDeg.ToString();
+                }
             }
-
-            // IrAlPunto espera (lat, lon, alt) en unidades grados/meters
-            dron.IrAlPunto((float)currentLatDeg, (float)currentLonDeg, nuevoAlt, bloquear: false);
-        }
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void AlturatrackBar_Scroll(object sender, EventArgs e)
-        {
-            int n = AlturatrackBar.Value;
-            AlturaLbl.Text = n.ToString();
-        }
-
-        private void AlturaLbl_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Alt_changeTrackBar_Scroll(object sender, EventArgs e)
-        {
-            int n = Alt_changeTrackBar.Value;
-            AltChangeLbl.Text = n.ToString();
-        }
-
-        private void AltChangeLbl_Click(object sender, EventArgs e)
-        {
-
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error parseando telemetría: " + ex.Message);
+            }
         }
     }
 }
