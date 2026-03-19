@@ -11,17 +11,29 @@ using MQTTnet;
 using MQTTnet.Client;
 using System.Text.Json; // Para procesar la telemetría
 
+using GMap.NET;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
+
 namespace Formulario
 {
     public partial class Form1 : Form
     {
         // 1. Instancia global de nuestro cliente MQTT
         private IMqttClient mqttClient;
-        private string origen = "elies"; // El nombre de tu app
+        private string origen = "elies22"; // El nombre de tu app
 
         private double currentLatDeg = double.NaN;
         private double currentLonDeg = double.NaN;
+        private double currentHeading = 0;
+        private double currentAlt = double.NaN;
 
+        private GMapControl gmap;
+        private GMapOverlay droneOverlay;
+        private GMapMarker droneMarker;
+        private System.Windows.Forms.Timer mapTimer;
+        private bool posicionActualizada = false;
         public Form1()
         {
             InitializeComponent();
@@ -72,7 +84,12 @@ namespace Formulario
             {
                 MessageBox.Show("Error conectando al broker MQTT: " + ex.Message);
             }
+
+           
+            InicializarMapa();
         }
+
+        
 
         // =========================================================
         // ENVÍO DE MENSAJES AL DRON (PUBLICADORES)
@@ -152,8 +169,7 @@ namespace Formulario
 
         private void Alt_changeTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
-            // Nota: He modificado esto porque en Python no tienes un "IrAlPunto". 
-            // He creado el comando "changeAltitude" que deberás añadir a tu script de Python.
+            
             PublicarMensaje("changeAltitude", Alt_changeTrackBar.Value.ToString());
         }
 
@@ -227,17 +243,151 @@ namespace Formulario
                     if (root.TryGetProperty("lat", out JsonElement latEl)) currentLatDeg = latEl.GetDouble();
                     if (root.TryGetProperty("lon", out JsonElement lonEl)) currentLonDeg = lonEl.GetDouble();
 
-                    if (root.TryGetProperty("alt", out JsonElement altEl)) altitudLbl.Text = altEl.GetDouble().ToString();
-                    if (root.TryGetProperty("heading", out JsonElement headEl)) headLbl.Text = headEl.GetDouble().ToString();
-                    if (root.TryGetProperty("battery", out JsonElement batEl)) BatteryLbl.Text = batEl.GetDouble().ToString("F0") + " %";
+                    if (root.TryGetProperty("alt", out JsonElement altEl))
+                    {
+                        currentAlt = altEl.GetDouble();
+                        altitudLbl.Text = currentAlt.ToString("F1") + " m";
+                    }
+                    if (root.TryGetProperty("heading", out JsonElement headEl))
+                    {
+                        currentHeading = headEl.GetDouble();
+                        headLbl.Text = headEl.GetDouble().ToString();
+                    }
 
+                    BatteryLbl.Text = "N/A";
                     latitudLbl.Text = currentLatDeg.ToString();
                     longitudLbl.Text = currentLonDeg.ToString();
+
+                    if (!double.IsNaN(currentLatDeg) && !double.IsNaN(currentLonDeg))
+                        ActualizarPosicionDron(currentLatDeg, currentLonDeg);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error parseando telemetría: " + ex.Message);
+            }
+        }
+
+
+        //COSAS MAPA
+        private void InicializarMapa()
+        {
+            gmap = new GMapControl();
+            gmap.Dock = DockStyle.Fill;
+            mapPanel.Controls.Add(gmap);
+
+            gmap.MouseClick += Gmap_MouseClick;
+
+            GMaps.Instance.Mode = AccessMode.ServerAndCache;
+            gmap.MapProvider = GMapProviders.GoogleSatelliteMap;
+            gmap.Position = new PointLatLng(41.27, 1.98);
+            gmap.MinZoom = 2;
+            gmap.MaxZoom = 25;
+            gmap.Zoom = 19;
+            gmap.ShowTileGridLines = false;
+            gmap.RetryLoadTile = 3;
+            gmap.ShowCenter = false;
+            gmap.IgnoreMarkerOnMouseWheel = true;
+
+            droneOverlay = new GMapOverlay("drone");
+            gmap.Overlays.Add(droneOverlay);
+
+            // Timer de refresco del mapa
+            mapTimer = new System.Windows.Forms.Timer();
+            mapTimer.Interval = 1000;
+            mapTimer.Tick += MapTimer_Tick;
+            mapTimer.Start();
+        }
+
+        private void MapTimer_Tick(object sender, EventArgs e)
+        {
+            if (!posicionActualizada) return;
+            if (double.IsNaN(currentLatDeg) || double.IsNaN(currentLonDeg)) return;
+
+            posicionActualizada = false;
+
+            var pos = new PointLatLng(currentLatDeg, currentLonDeg);
+
+            if (droneMarker == null)
+            {
+                droneMarker = new RedDotMarker(pos, 8, currentHeading); // ✅
+                droneOverlay.Markers.Add(droneMarker);
+            }
+            else
+            {
+                droneMarker.Position = pos;
+                ((RedDotMarker)droneMarker).Heading = currentHeading; // ✅ actualiza heading
+            }
+
+            gmap.Position = pos;
+            gmap.Refresh();
+        }
+
+
+        private void ActualizarPosicionDron(double lat, double lon)
+        {
+            currentLatDeg = lat;
+            currentLonDeg = lon;
+            posicionActualizada = true; // el Timer se encarga del resto
+        }
+
+        private void Gmap_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                // Convierte el punto de pantalla a coordenadas lat/lon
+                PointLatLng clickPos = gmap.FromLocalToLatLng(e.X, e.Y);
+
+                // Usa la altitud actual del dron para mantenerla
+                double altDestino = double.IsNaN(currentAlt) ? 5 : currentAlt;
+
+                string payload = JsonSerializer.Serialize(new
+                {
+                    lat = clickPos.Lat,
+                    lon = clickPos.Lng,
+                    alt = altDestino
+                });
+
+                PublicarMensaje("goto", payload);
+            }
+        }
+    }
+
+    
+
+    public class RedDotMarker : GMapMarker
+    {
+        private int radius;
+        public double Heading { get; set; } // ✅ propiedad actualizable
+
+        public RedDotMarker(PointLatLng pos, int radius = 8, double heading = 0) : base(pos)
+        {
+            this.radius = radius;
+            this.Heading = heading;
+            Size = new Size(radius * 2, radius * 2);
+            Offset = new Point(-radius, -radius);
+        }
+
+        public override void OnRender(Graphics g)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            // Círculo rojo
+            g.FillEllipse(Brushes.Red, LocalPosition.X, LocalPosition.Y, radius * 2, radius * 2);
+
+            // Línea de heading desde el centro del círculo
+            int cx = LocalPosition.X + radius;
+            int cy = LocalPosition.Y + radius;
+
+            double rad = (Heading - 90) * Math.PI / 180.0; // convertir a radianes
+            int lineLength = radius + 6; // un poco más larga que el radio
+
+            int ex = cx + (int)(lineLength * Math.Cos(rad));
+            int ey = cy + (int)(lineLength * Math.Sin(rad));
+
+            using (Pen pen = new Pen(Color.Black, 2))
+            {
+                g.DrawLine(pen, cx, cy, ex, ey);
             }
         }
     }
