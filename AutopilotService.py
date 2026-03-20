@@ -6,7 +6,7 @@ import paho.mqtt.client as mqtt
 import json
 from dronLink.Dron import Dron
 
-usuario = "elies"
+usuario = "elies22"
 
 # esta función sirve para publicar los eventos resultantes de las acciones solicitadas
 def publish_event (event):
@@ -17,6 +17,7 @@ def publish_event (event):
 def publish_telemetry_info (telemetry_info):
     # cuando reciba datos de telemetría los publico
     global sending_topic, client
+    print("Telemetría recibida:", telemetry_info)
     client.publish(sending_topic + '/telemetryInfo', json.dumps(telemetry_info))
 
 def on_message(cli, userdata, message):
@@ -36,13 +37,20 @@ def on_message(cli, userdata, message):
         baud = 115200
         dron.connect(connection_string, baud, freq=10)
         publish_event('connected')
+        print("connected")
 
     if command == 'arm_takeOff':
         if dron.state == 'connected':
-            print ('vamos a armar')
+            altitude = int(message.payload.decode("utf-8")) if message.payload else 5
+            print (f'vamos a armar a{altitude}m')
             dron.arm()
             print ('vamos a despegar')
-            dron.takeOff(5, blocking=False, callback=publish_event, params='flying')
+            dron.takeOff(altitude, blocking=False, callback=publish_event, params='flying')
+
+    if command == 'changeAltitude':
+        if dron.state == 'flying':
+            altitude = int(message.payload.decode("utf-8"))
+            dron.change_altitude(altitude)
 
     if command == 'go':
         if dron.state == 'flying':
@@ -56,6 +64,7 @@ def on_message(cli, userdata, message):
 
     if command == 'RTL':
         if dron.state == 'flying':
+            dron.changeNavSpeed(1.0) # para que vuelva a casa despacio
             # operación no bloqueante. Cuando acabe publicará el evento correspondiente
             dron.RTL(blocking=False, callback=publish_event, params='atHome')
 
@@ -76,6 +85,13 @@ def on_message(cli, userdata, message):
             speed = float(message.payload.decode("utf-8"))
             dron.changeNavSpeed(float(speed))
 
+    if command == 'goto':
+        if dron.state == 'flying':
+            data = json.loads(message.payload.decode("utf-8"))
+            lat = float(data['lat'])
+            lon = float(data['lon'])
+            alt = float(data['alt'])
+            dron.goto(lat, lon, alt, blocking=False)
 
 def on_connect(client, userdata, flags, rc):
     global connected
@@ -91,8 +107,9 @@ dron = Dron()
 client = mqtt.Client(f"Servicio_{usuario}", transport="websockets")
 
 # me conecto al broker publico y gratuito
-broker_address = "broker.hivemq.com"
+broker_address = "dronseetac.upc.edu"
 broker_port = 8000
+client.username_pw_set("dronsEETAC", "mimara1456.")
 
 client.on_message = on_message
 client.on_connect = on_connect

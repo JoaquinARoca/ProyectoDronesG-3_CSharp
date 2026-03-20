@@ -71,6 +71,12 @@
             this.label8 = new System.Windows.Forms.Label();
             this.AltChangeLbl = new System.Windows.Forms.Label();
             this.mapPanel = new System.Windows.Forms.Panel();
+            this.videoPictureBox = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.startVideoBtn = new System.Windows.Forms.Button();
+            this.stopVideoBtn = new System.Windows.Forms.Button();
+            this.captureBtn = new System.Windows.Forms.Button();
+            this.galleryBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.headingTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.velocidadTrackBar)).BeginInit();
             this.groupBox4.SuspendLayout();
@@ -78,13 +84,14 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AlturatrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Alt_changeTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.videoPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(425, 217);
+            this.label4.Location = new System.Drawing.Point(100, 421);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 20);
@@ -93,8 +100,8 @@
             // 
             // headingTrackBar
             // 
-            this.headingTrackBar.Location = new System.Drawing.Point(363, 262);
-            this.headingTrackBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.headingTrackBar.Location = new System.Drawing.Point(38, 466);
+            this.headingTrackBar.Margin = new System.Windows.Forms.Padding(4);
             this.headingTrackBar.Maximum = 360;
             this.headingTrackBar.Name = "headingTrackBar";
             this.headingTrackBar.Size = new System.Drawing.Size(242, 56);
@@ -107,7 +114,7 @@
             this.headingLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.headingLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.headingLbl.ForeColor = System.Drawing.Color.Red;
-            this.headingLbl.Location = new System.Drawing.Point(350, 218);
+            this.headingLbl.Location = new System.Drawing.Point(25, 422);
             this.headingLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.headingLbl.Name = "headingLbl";
             this.headingLbl.Size = new System.Drawing.Size(64, 24);
@@ -119,7 +126,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(426, 140);
+            this.label9.Location = new System.Drawing.Point(101, 344);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(82, 20);
@@ -131,7 +138,7 @@
             this.velocidadLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.velocidadLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.velocidadLbl.ForeColor = System.Drawing.Color.Red;
-            this.velocidadLbl.Location = new System.Drawing.Point(348, 134);
+            this.velocidadLbl.Location = new System.Drawing.Point(23, 338);
             this.velocidadLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.velocidadLbl.Name = "velocidadLbl";
             this.velocidadLbl.Size = new System.Drawing.Size(64, 29);
@@ -141,8 +148,8 @@
             // 
             // velocidadTrackBar
             // 
-            this.velocidadTrackBar.Location = new System.Drawing.Point(364, 173);
-            this.velocidadTrackBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.velocidadTrackBar.Location = new System.Drawing.Point(39, 377);
+            this.velocidadTrackBar.Margin = new System.Windows.Forms.Padding(4);
             this.velocidadTrackBar.Name = "velocidadTrackBar";
             this.velocidadTrackBar.Size = new System.Drawing.Size(242, 56);
             this.velocidadTrackBar.TabIndex = 36;
@@ -164,10 +171,10 @@
             this.groupBox4.Controls.Add(this.button22);
             this.groupBox4.Controls.Add(this.button23);
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox4.Location = new System.Drawing.Point(333, 322);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Location = new System.Drawing.Point(8, 513);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(370, 212);
             this.groupBox4.TabIndex = 30;
             this.groupBox4.TabStop = false;
@@ -271,7 +278,7 @@
             // button22
             // 
             this.button22.Location = new System.Drawing.Point(198, 30);
-            this.button22.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button22.Margin = new System.Windows.Forms.Padding(4);
             this.button22.Name = "button22";
             this.button22.Size = new System.Drawing.Size(146, 32);
             this.button22.TabIndex = 1;
@@ -282,7 +289,7 @@
             // button23
             // 
             this.button23.Location = new System.Drawing.Point(21, 30);
-            this.button23.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button23.Margin = new System.Windows.Forms.Padding(4);
             this.button23.Name = "button23";
             this.button23.Size = new System.Drawing.Size(156, 32);
             this.button23.TabIndex = 0;
@@ -303,10 +310,10 @@
             this.groupBox2.Controls.Add(this.button10);
             this.groupBox2.Controls.Add(this.button9);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(20, 262);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Location = new System.Drawing.Point(8, 746);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox2.Size = new System.Drawing.Size(295, 277);
             this.groupBox2.TabIndex = 32;
             this.groupBox2.TabStop = false;
@@ -325,7 +332,7 @@
             // 
             this.button17.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button17.Location = new System.Drawing.Point(183, 188);
-            this.button17.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button17.Margin = new System.Windows.Forms.Padding(4);
             this.button17.Name = "button17";
             this.button17.Size = new System.Drawing.Size(73, 59);
             this.button17.TabIndex = 8;
@@ -337,7 +344,7 @@
             // 
             this.button16.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button16.Location = new System.Drawing.Point(104, 188);
-            this.button16.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button16.Margin = new System.Windows.Forms.Padding(4);
             this.button16.Name = "button16";
             this.button16.Size = new System.Drawing.Size(71, 59);
             this.button16.TabIndex = 7;
@@ -349,7 +356,7 @@
             // 
             this.button15.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button15.Location = new System.Drawing.Point(23, 188);
-            this.button15.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button15.Margin = new System.Windows.Forms.Padding(4);
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(73, 59);
             this.button15.TabIndex = 6;
@@ -361,7 +368,7 @@
             // 
             this.button14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button14.Location = new System.Drawing.Point(185, 126);
-            this.button14.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button14.Margin = new System.Windows.Forms.Padding(4);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(71, 55);
             this.button14.TabIndex = 5;
@@ -374,7 +381,7 @@
             this.button13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button13.Location = new System.Drawing.Point(104, 124);
-            this.button13.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button13.Margin = new System.Windows.Forms.Padding(4);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(73, 57);
             this.button13.TabIndex = 4;
@@ -386,7 +393,7 @@
             // 
             this.button12.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button12.Location = new System.Drawing.Point(23, 124);
-            this.button12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button12.Margin = new System.Windows.Forms.Padding(4);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(73, 57);
             this.button12.TabIndex = 3;
@@ -398,7 +405,7 @@
             // 
             this.button11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button11.Location = new System.Drawing.Point(185, 57);
-            this.button11.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button11.Margin = new System.Windows.Forms.Padding(4);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(71, 60);
             this.button11.TabIndex = 2;
@@ -410,7 +417,7 @@
             // 
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button10.Location = new System.Drawing.Point(104, 57);
-            this.button10.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button10.Margin = new System.Windows.Forms.Padding(4);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(73, 60);
             this.button10.TabIndex = 1;
@@ -423,7 +430,7 @@
             this.button9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button9.Location = new System.Drawing.Point(23, 57);
-            this.button9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button9.Margin = new System.Windows.Forms.Padding(4);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(73, 59);
             this.button9.TabIndex = 0;
@@ -439,11 +446,11 @@
             this.groupBox1.Controls.Add(this.despegarBtn);
             this.groupBox1.Controls.Add(this.button6);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(20, 50);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Location = new System.Drawing.Point(20, 13);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox1.Size = new System.Drawing.Size(295, 204);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Size = new System.Drawing.Size(341, 204);
             this.groupBox1.TabIndex = 31;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Control";
@@ -453,9 +460,9 @@
             this.but_connect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.but_connect.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.but_connect.Location = new System.Drawing.Point(8, 37);
-            this.but_connect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.but_connect.Margin = new System.Windows.Forms.Padding(4);
             this.but_connect.Name = "but_connect";
-            this.but_connect.Size = new System.Drawing.Size(270, 36);
+            this.but_connect.Size = new System.Drawing.Size(325, 36);
             this.but_connect.TabIndex = 2;
             this.but_connect.Text = "Connectar";
             this.but_connect.UseVisualStyleBackColor = false;
@@ -466,9 +473,9 @@
             this.button7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button7.Location = new System.Drawing.Point(8, 146);
-            this.button7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button7.Margin = new System.Windows.Forms.Padding(4);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(131, 38);
+            this.button7.Size = new System.Drawing.Size(160, 38);
             this.button7.TabIndex = 13;
             this.button7.Text = "Aterrizar";
             this.button7.UseVisualStyleBackColor = false;
@@ -479,9 +486,9 @@
             this.despegarBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.despegarBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.despegarBtn.Location = new System.Drawing.Point(8, 86);
-            this.despegarBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.despegarBtn.Margin = new System.Windows.Forms.Padding(4);
             this.despegarBtn.Name = "despegarBtn";
-            this.despegarBtn.Size = new System.Drawing.Size(271, 38);
+            this.despegarBtn.Size = new System.Drawing.Size(325, 38);
             this.despegarBtn.TabIndex = 5;
             this.despegarBtn.Text = "Despegar";
             this.despegarBtn.UseVisualStyleBackColor = false;
@@ -491,10 +498,10 @@
             // 
             this.button6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.button6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button6.Location = new System.Drawing.Point(147, 146);
-            this.button6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button6.Location = new System.Drawing.Point(176, 146);
+            this.button6.Margin = new System.Windows.Forms.Padding(4);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(132, 38);
+            this.button6.Size = new System.Drawing.Size(157, 38);
             this.button6.TabIndex = 10;
             this.button6.Text = "RTL";
             this.button6.UseVisualStyleBackColor = false;
@@ -506,7 +513,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1223, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1037, 24);
             this.menuStrip1.TabIndex = 33;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -514,7 +521,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(425, 38);
+            this.label1.Location = new System.Drawing.Point(100, 242);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(134, 20);
@@ -526,7 +533,7 @@
             this.AlturaLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.AlturaLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AlturaLbl.ForeColor = System.Drawing.Color.Red;
-            this.AlturaLbl.Location = new System.Drawing.Point(348, 32);
+            this.AlturaLbl.Location = new System.Drawing.Point(23, 236);
             this.AlturaLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.AlturaLbl.Name = "AlturaLbl";
             this.AlturaLbl.Size = new System.Drawing.Size(64, 29);
@@ -537,8 +544,8 @@
             // 
             // AlturatrackBar
             // 
-            this.AlturatrackBar.Location = new System.Drawing.Point(363, 71);
-            this.AlturatrackBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.AlturatrackBar.Location = new System.Drawing.Point(38, 275);
+            this.AlturatrackBar.Margin = new System.Windows.Forms.Padding(4);
             this.AlturatrackBar.Maximum = 100;
             this.AlturatrackBar.Name = "AlturatrackBar";
             this.AlturatrackBar.Size = new System.Drawing.Size(242, 56);
@@ -548,7 +555,7 @@
             // 
             // Alt_changeTrackBar
             // 
-            this.Alt_changeTrackBar.Location = new System.Drawing.Point(650, 71);
+            this.Alt_changeTrackBar.Location = new System.Drawing.Point(305, 275);
             this.Alt_changeTrackBar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Alt_changeTrackBar.Maximum = 100;
             this.Alt_changeTrackBar.Name = "Alt_changeTrackBar";
@@ -563,7 +570,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(636, 19);
+            this.label8.Location = new System.Drawing.Point(291, 223);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(53, 20);
@@ -575,7 +582,7 @@
             this.AltChangeLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.AltChangeLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AltChangeLbl.ForeColor = System.Drawing.Color.Red;
-            this.AltChangeLbl.Location = new System.Drawing.Point(640, 45);
+            this.AltChangeLbl.Location = new System.Drawing.Point(295, 249);
             this.AltChangeLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.AltChangeLbl.Name = "AltChangeLbl";
             this.AltChangeLbl.Size = new System.Drawing.Size(64, 24);
@@ -587,16 +594,80 @@
             // mapPanel
             // 
             this.mapPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mapPanel.Location = new System.Drawing.Point(770, 87);
+            this.mapPanel.Location = new System.Drawing.Point(429, 50);
             this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(410, 422);
+            this.mapPanel.Size = new System.Drawing.Size(575, 413);
             this.mapPanel.TabIndex = 46;
+            // 
+            // videoPictureBox
+            // 
+            this.videoPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.videoPictureBox.Location = new System.Drawing.Point(429, 481);
+            this.videoPictureBox.Name = "videoPictureBox";
+            this.videoPictureBox.Size = new System.Drawing.Size(575, 320);
+            this.videoPictureBox.TabIndex = 47;
+            this.videoPictureBox.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(0, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 48;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // startVideoBtn
+            // 
+            this.startVideoBtn.Location = new System.Drawing.Point(429, 818);
+            this.startVideoBtn.Name = "startVideoBtn";
+            this.startVideoBtn.Size = new System.Drawing.Size(130, 40);
+            this.startVideoBtn.TabIndex = 49;
+            this.startVideoBtn.Text = "Start Video";
+            this.startVideoBtn.UseVisualStyleBackColor = true;
+            this.startVideoBtn.Click += new System.EventHandler(this.startVideoBtn_Click);
+            // 
+            // stopVideoBtn
+            // 
+            this.stopVideoBtn.Location = new System.Drawing.Point(429, 870);
+            this.stopVideoBtn.Name = "stopVideoBtn";
+            this.stopVideoBtn.Size = new System.Drawing.Size(130, 40);
+            this.stopVideoBtn.TabIndex = 50;
+            this.stopVideoBtn.Text = "Stop Video";
+            this.stopVideoBtn.UseVisualStyleBackColor = true;
+            this.stopVideoBtn.Click += new System.EventHandler(this.stopVideoBtn_Click);
+            // 
+            // captureBtn
+            // 
+            this.captureBtn.Location = new System.Drawing.Point(690, 818);
+            this.captureBtn.Name = "captureBtn";
+            this.captureBtn.Size = new System.Drawing.Size(130, 40);
+            this.captureBtn.TabIndex = 51;
+            this.captureBtn.Text = "Capturar Imagen";
+            this.captureBtn.UseVisualStyleBackColor = true;
+            this.captureBtn.Click += new System.EventHandler(this.captureBtn_Click);
+            // 
+            // galleryBtn
+            // 
+            this.galleryBtn.Location = new System.Drawing.Point(690, 872);
+            this.galleryBtn.Name = "galleryBtn";
+            this.galleryBtn.Size = new System.Drawing.Size(130, 40);
+            this.galleryBtn.TabIndex = 52;
+            this.galleryBtn.Text = "Abrir Galeria";
+            this.galleryBtn.UseVisualStyleBackColor = true;
+            this.galleryBtn.Click += new System.EventHandler(this.galleryBtn_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1223, 558);
+            this.ClientSize = new System.Drawing.Size(1037, 1055);
+            this.Controls.Add(this.galleryBtn);
+            this.Controls.Add(this.captureBtn);
+            this.Controls.Add(this.stopVideoBtn);
+            this.Controls.Add(this.startVideoBtn);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.videoPictureBox);
             this.Controls.Add(this.mapPanel);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.AltChangeLbl);
@@ -614,7 +685,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -627,6 +698,7 @@
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.AlturatrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Alt_changeTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.videoPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -677,6 +749,12 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label AltChangeLbl;
         private System.Windows.Forms.Panel mapPanel;
+        private System.Windows.Forms.PictureBox videoPictureBox;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button startVideoBtn;
+        private System.Windows.Forms.Button stopVideoBtn;
+        private System.Windows.Forms.Button captureBtn;
+        private System.Windows.Forms.Button galleryBtn;
     }
 }
 

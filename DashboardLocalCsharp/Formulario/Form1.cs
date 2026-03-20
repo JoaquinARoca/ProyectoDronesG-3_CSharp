@@ -1,20 +1,21 @@
-﻿using System;
+﻿using GMap.NET;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
+using MQTTnet;
+using MQTTnet.Client;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json; // Para procesar la telemetría
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MQTTnet;
-using MQTTnet.Client;
-using System.Text.Json; // Para procesar la telemetría
-
-using GMap.NET;
-using GMap.NET.MapProviders;
-using GMap.NET.WindowsForms;
-using GMap.NET.WindowsForms.Markers;
+using System.IO;
 
 namespace Formulario
 {
@@ -24,6 +25,19 @@ namespace Formulario
         private IMqttClient mqttClient;
         private string origen = "elies22"; // El nombre de tu app
 
+        //video streaming:
+        private string mjpegUrl = "http://localhost:8888/";
+
+        //galeria
+        private List<string> capturedPhotoPaths = new List<string>();
+        private string photosFolder = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "DronePhotos");
+
+        private byte[] latestJpegBytes = null;
+        private readonly object jpegLock = new object();
+
+
+        //map
         private double currentLatDeg = double.NaN;
         private double currentLonDeg = double.NaN;
         private double currentHeading = 0;
@@ -34,9 +48,17 @@ namespace Formulario
         private GMapMarker droneMarker;
         private System.Windows.Forms.Timer mapTimer;
         private bool posicionActualizada = false;
+
+        private GMapOverlay destinationOverlay; // overlay separado, por debajo del dron
+        private GMapMarker destinationMarker;
+        private double destLat = double.NaN;
+        private double destLon = double.NaN;
+        private const double ARRIVAL_THRESHOLD = 0.000005; // ~0.5 metros
         public Form1()
         {
             InitializeComponent();
+            if (DesignMode) return; 
+
             CheckForIllegalCrossThreadCalls = false;
 
             Font letraGrande = new Font("Arial", 14);
@@ -56,13 +78,16 @@ namespace Formulario
 
         private async void Form1_Load(object sender, EventArgs e)
         {
+
+            if (DesignMode) return;
             // 2. Configurar y conectar MQTTnet al iniciar el formulario
             var mqttFactory = new MqttFactory();
             mqttClient = mqttFactory.CreateMqttClient();
 
             // Configuramos conexión por WebSockets (puerto 8000)
             var mqttClientOptions = new MqttClientOptionsBuilder()
-                .WithWebSocketServer("broker.hivemq.com:8000/mqtt")
+                .WithWebSocketServer("dronseetac.upc.edu:8000/mqtt") // Dirección y puerto 8000
+                .WithCredentials("dronsEETAC", "mimara1456.")       // Usuario y contraseña
                 .Build();
 
             // Configurar qué hacer cuando se recibe un mensaje
@@ -193,12 +218,9 @@ namespace Formulario
             string topic = e.ApplicationMessage.Topic;
             string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload ?? Array.Empty<byte>());
 
-            // Utilizamos Invoke para evitar el error de "Cross-Thread" al actualizar la UI
-            this.Invoke((MethodInvoker)delegate
+            this.BeginInvoke((MethodInvoker)delegate  // ✅ BeginInvoke en lugar de Invoke
             {
-                // Extraemos el final del tópico (ej: "connected", "telemetryInfo", etc.)
                 string ev = topic.Split('/').Last();
-
                 switch (ev)
                 {
                     case "connected":
@@ -269,6 +291,155 @@ namespace Formulario
         }
 
 
+        //COSAS VIDEO
+
+        
+
+        private Thread videoThread;
+        private bool videoRunning = false;
+
+        private System.Net.HttpWebRequest activeRequest = null;
+
+        private System.Windows.Forms.Timer displayTimer;
+
+        private void startVideoBtn_Click(object sender, EventArgs e)
+        {
+            videoRunning = false;
+            activeRequest?.Abort();
+            videoThread?.Join(1000);
+
+            videoRunning = true;
+            videoThread = new Thread(LeerMJPEG);
+            videoThread.IsBackground = true;
+            videoThread.Start();
+
+            // ✅ Timer de display independiente del hilo de red
+            displayTimer = new System.Windows.Forms.Timer();
+            displayTimer.Interval = 66; // ~15fps
+            displayTimer.Tick += DisplayTimer_Tick;
+            displayTimer.Start();
+        }
+
+        private void stopVideoBtn_Click(object sender, EventArgs e)
+        {
+            videoRunning = false;
+            activeRequest?.Abort();
+            displayTimer?.Stop();
+            videoPictureBox.Image = null;
+            lock (jpegLock) latestJpegBytes = null;
+        }
+
+        private void DisplayTimer_Tick(object sender, EventArgs e)
+        {
+            byte[] jpeg;
+            lock (jpegLock)
+            {
+                if (latestJpegBytes == null) return;
+                jpeg = latestJpegBytes;
+                latestJpegBytes = null;
+            }
+
+            // ✅ Crea el Bitmap en un hilo separado, solo asigna al PictureBox en UI
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    Image img;
+                    using (var ms = new System.IO.MemoryStream(jpeg))
+                        img = new Bitmap(Image.FromStream(ms));
+
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
+                        var old = videoPictureBox.Image;
+                        videoPictureBox.Image = img;
+                        old?.Dispose();
+                    });
+                }
+                catch { }
+            });
+        }
+
+        private void LeerMJPEG()
+        {
+            try
+            {
+                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(mjpegUrl);
+                request.Timeout = 5000;
+                request.ReadWriteTimeout = 5000;
+                activeRequest = request; // ✅ guarda referencia para poder abortarlo
+
+                var response = request.GetResponse();
+                var stream = response.GetResponseStream();
+                var buffer = new byte[4096];
+                var ms = new System.IO.MemoryStream();
+                int bytesRead;
+
+                while (videoRunning && (bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, bytesRead);
+                    var data = ms.ToArray();
+
+                    int start = FindBytes(data, new byte[] { 0xFF, 0xD8 });
+                    int end = FindBytes(data, new byte[] { 0xFF, 0xD9 });
+
+                    if (start >= 0 && end >= 0 && end > start)
+                    {
+                        var jpeg = new byte[end - start + 2];
+                        Array.Copy(data, start, jpeg, 0, jpeg.Length);
+
+                        if (start >= 0 && end >= 0 && end > start)
+                        {
+                            var jpegFrame = new byte[end - start + 2];  // ✅ jpeg → jpegFrame
+                            Array.Copy(data, start, jpegFrame, 0, jpegFrame.Length);
+
+                            lock (jpegLock)
+                                latestJpegBytes = jpegFrame;
+
+                            var leftover = new byte[data.Length - (end + 2)];  // ✅ remaining → leftover
+                            Array.Copy(data, end + 2, leftover, 0, leftover.Length);
+                            ms = new System.IO.MemoryStream();
+                            ms.Write(leftover, 0, leftover.Length);
+                        }
+
+                        var remaining = new byte[data.Length - (end + 2)];
+                        Array.Copy(data, end + 2, remaining, 0, remaining.Length);
+                        ms = new System.IO.MemoryStream();
+                        ms.Write(remaining, 0, remaining.Length);
+                    }
+
+                    if (ms.Length > 2 * 1024 * 1024) // ✅ reducido a 2MB
+                        ms = new System.IO.MemoryStream();
+                }
+            }
+            catch (System.Net.WebException ex) when (ex.Status == System.Net.WebExceptionStatus.RequestCanceled)
+            {
+                // ✅ Abort() lanza WebException — la ignoramos, es intencional
+                Console.WriteLine("Stream de video detenido.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error video: " + ex.Message);
+            }
+            finally
+            {
+                activeRequest = null; // ✅ limpia la referencia
+            }
+        }
+
+        private int FindBytes(byte[] buffer, byte[] pattern)
+        {
+            for (int i = 0; i <= buffer.Length - pattern.Length; i++)
+            {
+                bool found = true;
+                for (int j = 0; j < pattern.Length; j++)
+                    if (buffer[i + j] != pattern[j]) { found = false; break; }
+                if (found) return i;
+            }
+            return -1;
+        }
+
+        // Botón para iniciar el video
+
         //COSAS MAPA
         private void InicializarMapa()
         {
@@ -289,12 +460,14 @@ namespace Formulario
             gmap.ShowCenter = false;
             gmap.IgnoreMarkerOnMouseWheel = true;
 
+            destinationOverlay = new GMapOverlay("destination");
+            gmap.Overlays.Add(destinationOverlay); //primero = por debajo
             droneOverlay = new GMapOverlay("drone");
-            gmap.Overlays.Add(droneOverlay);
+            gmap.Overlays.Add(droneOverlay);       //segundo = por encima
 
             // Timer de refresco del mapa
             mapTimer = new System.Windows.Forms.Timer();
-            mapTimer.Interval = 1000;
+            mapTimer.Interval = 500;
             mapTimer.Tick += MapTimer_Tick;
             mapTimer.Start();
         }
@@ -310,13 +483,26 @@ namespace Formulario
 
             if (droneMarker == null)
             {
-                droneMarker = new RedDotMarker(pos, 8, currentHeading); // ✅
+                droneMarker = new RedDotMarker(pos, 8, currentHeading);
                 droneOverlay.Markers.Add(droneMarker);
             }
             else
             {
                 droneMarker.Position = pos;
-                ((RedDotMarker)droneMarker).Heading = currentHeading; // ✅ actualiza heading
+                ((RedDotMarker)droneMarker).Heading = currentHeading;
+            }
+
+            //Comprueba si el dron ha llegado al destino
+            if (!double.IsNaN(destLat) && !double.IsNaN(destLon))
+            {
+                double dLat = Math.Abs(currentLatDeg - destLat);
+                double dLon = Math.Abs(currentLonDeg - destLon);
+                if (dLat < ARRIVAL_THRESHOLD && dLon < ARRIVAL_THRESHOLD)
+                {
+                    destinationOverlay.Markers.Clear();
+                    destLat = double.NaN;
+                    destLon = double.NaN;
+                }
             }
 
             gmap.Position = pos;
@@ -335,11 +521,17 @@ namespace Formulario
         {
             if (e.Button == MouseButtons.Left)
             {
-                // Convierte el punto de pantalla a coordenadas lat/lon
-                PointLatLng clickPos = gmap.FromLocalToLatLng(e.X, e.Y);
+                Console.WriteLine($"MQTT conectado: {mqttClient?.IsConnected}"); // ✅ debug
 
-                // Usa la altitud actual del dron para mantenerla
+                PointLatLng clickPos = gmap.FromLocalToLatLng(e.X, e.Y);
                 double altDestino = double.IsNaN(currentAlt) ? 5 : currentAlt;
+
+                destLat = clickPos.Lat;
+                destLon = clickPos.Lng;
+
+                destinationOverlay.Markers.Clear();
+                destinationMarker = new BlueXMarker(clickPos, 6);
+                destinationOverlay.Markers.Add(destinationMarker);
 
                 string payload = JsonSerializer.Serialize(new
                 {
@@ -351,44 +543,54 @@ namespace Formulario
                 PublicarMensaje("goto", payload);
             }
         }
+
+        private void captureBtn_Click(object sender, EventArgs e)
+        {
+            byte[] jpeg;
+            lock (jpegLock) jpeg = latestJpegBytes;
+
+            if (jpeg == null && videoPictureBox.Image == null)
+            {
+                MessageBox.Show("No hay stream de video activo.");
+                return;
+            }
+
+            System.IO.Directory.CreateDirectory(photosFolder);
+            string filename = $"drone_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
+            string path = System.IO.Path.Combine(photosFolder, filename);
+
+            if (jpeg != null)
+            {
+                // ✅ Guarda los bytes JPEG directamente, sin crear Bitmap
+                File.WriteAllBytes(path, jpeg);
+            }
+            else
+            {
+                using (Bitmap bmp = new Bitmap(videoPictureBox.Image.Width, videoPictureBox.Image.Height))
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.DrawImage(videoPictureBox.Image, 0, 0);
+                    bmp.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+            }
+
+            capturedPhotoPaths.Add(path);
+            MessageBox.Show($"Foto guardada: {filename}");
+        }
+
+        private void galleryBtn_Click(object sender, EventArgs e)
+        {
+            if (capturedPhotoPaths.Count == 0)
+            {
+                MessageBox.Show("No hay fotos capturadas aún.");
+                return;
+            }
+            using (var gallery = new GalleryForm(capturedPhotoPaths, photosFolder))
+                gallery.ShowDialog();
+        }
     }
 
     
 
-    public class RedDotMarker : GMapMarker
-    {
-        private int radius;
-        public double Heading { get; set; } // ✅ propiedad actualizable
-
-        public RedDotMarker(PointLatLng pos, int radius = 8, double heading = 0) : base(pos)
-        {
-            this.radius = radius;
-            this.Heading = heading;
-            Size = new Size(radius * 2, radius * 2);
-            Offset = new Point(-radius, -radius);
-        }
-
-        public override void OnRender(Graphics g)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            // Círculo rojo
-            g.FillEllipse(Brushes.Red, LocalPosition.X, LocalPosition.Y, radius * 2, radius * 2);
-
-            // Línea de heading desde el centro del círculo
-            int cx = LocalPosition.X + radius;
-            int cy = LocalPosition.Y + radius;
-
-            double rad = (Heading - 90) * Math.PI / 180.0; // convertir a radianes
-            int lineLength = radius + 6; // un poco más larga que el radio
-
-            int ex = cx + (int)(lineLength * Math.Cos(rad));
-            int ey = cy + (int)(lineLength * Math.Sin(rad));
-
-            using (Pen pen = new Pen(Color.Black, 2))
-            {
-                g.DrawLine(pen, cx, cy, ex, ey);
-            }
-        }
-    }
+    
 }
