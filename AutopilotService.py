@@ -7,6 +7,7 @@ import json
 from dronLink.Dron import Dron
 
 usuario = "elies22"
+import threading
 
 # esta función sirve para publicar los eventos resultantes de las acciones solicitadas
 def publish_event (event):
@@ -78,7 +79,11 @@ def on_message(cli, userdata, message):
     if command == 'changeHeading':
         if dron.state == 'flying':
             heading = float(message.payload.decode("utf-8"))
-            dron.changeHeading(int(heading))
+            threading.Thread(
+                target=dron.changeHeading,
+                args=(int(heading),),
+                daemon=True
+            ).start()
 
     if command == 'changeNavSpeed':
         if dron.state == 'flying':

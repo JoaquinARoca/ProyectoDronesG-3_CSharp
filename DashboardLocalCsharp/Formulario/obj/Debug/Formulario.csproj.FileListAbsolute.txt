@@ -62,6 +62,7 @@ C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\Dash
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Data.SQLite.dll
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Data.SQLite.EF6.dll
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Data.SQLite.Linq.dll
+C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.dll
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.IO.Pipelines.dll
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Memory.dll
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Numerics.Vectors.dll
@@ -75,6 +76,7 @@ C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\Dash
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\MQTTnet.xml
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\Newtonsoft.Json.xml
+C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.xml
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Buffers.xml
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Data.SqlClient.xml
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.Data.SQLite.xml
@@ -94,5 +96,3 @@ C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\Dash
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.Up2Date
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.exe
 C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.pdb
-C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.dll
-C:\UPC\4B\PD\CLASSE\V2_G3\ProyectoDronesG-3_CSharp\ProyectoDronesG-3_CSharp\DashboardLocalCsharp\Formulario\bin\Debug\System.xml

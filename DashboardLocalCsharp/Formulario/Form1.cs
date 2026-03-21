@@ -36,6 +36,9 @@ namespace Formulario
         private byte[] latestJpegBytes = null;
         private readonly object jpegLock = new object();
 
+        //detection
+        private List<int> selectedObjectIds = new List<int>();
+
 
         //map
         private double currentLatDeg = double.NaN;
@@ -110,11 +113,13 @@ namespace Formulario
                 MessageBox.Show("Error conectando al broker MQTT: " + ex.Message);
             }
 
-           
+
             InicializarMapa();
+            InicializarBotonesDeteccion();
+
         }
 
-        
+
 
         // =========================================================
         // ENVÍO DE MENSAJES AL DRON (PUBLICADORES)
@@ -190,6 +195,18 @@ namespace Formulario
         private void velocidadTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
             PublicarMensaje("changeNavSpeed", velocidadTrackBar.Value.ToString());
+
+            if (!double.IsNaN(destLat) && !double.IsNaN(destLon))
+            {
+                double altDestino = double.IsNaN(currentAlt) ? 5 : currentAlt;
+                string payload = JsonSerializer.Serialize(new
+                {
+                    lat = destLat,
+                    lon = destLon,
+                    alt = altDestino
+                });
+                PublicarMensaje("goto", payload);
+            }
         }
 
         private void Alt_changeTrackBar_MouseUp(object sender, MouseEventArgs e)
@@ -272,8 +289,13 @@ namespace Formulario
                     }
                     if (root.TryGetProperty("heading", out JsonElement headEl))
                     {
-                        currentHeading = headEl.GetDouble();
-                        headLbl.Text = headEl.GetDouble().ToString();
+                        double newHead = headEl.GetDouble();
+                        if (Math.Abs(newHead - currentHeading) > 0.5)
+                        {
+                            currentHeading = newHead;
+                            headLbl.Text = currentHeading.ToString("F1") + " °";
+                            posicionActualizada = true; 
+                        }
                     }
 
                     BatteryLbl.Text = "N/A";
@@ -438,7 +460,73 @@ namespace Formulario
             return -1;
         }
 
-        // Botón para iniciar el video
+        // deteccion
+
+        private readonly Dictionary<string, int> cocoObjects = new Dictionary<string, int>
+        {
+            { "Banana",   46 },
+            { "Reloj",    74 },
+            { "Pizza",    53 },
+            { "Avión",     4 },
+            { "Coche",     2 },
+            { "Moto",      3 },
+            { "Persona",   0 },
+            { "Perro",    16 },
+            { "Gato",     15 },
+            { "Silla",    56 }
+        };
+
+        // Envía la lista de objetos seleccionados al VideoReceiver
+        private void EnviarDeteccion()
+        {
+            string payload = JsonSerializer.Serialize(new
+            {
+                objectIds = selectedObjectIds
+            });
+            PublicarMensaje("startDetection", payload);
+        }
+
+        private void stopDetectionBtn_Click(object sender, EventArgs e)
+        {
+            selectedObjectIds.Clear();
+            PublicarMensaje("stopDetection");
+            // Resetea colores de botones
+            foreach (Control c in detectionPanel.Controls)
+               if (c is Button b) b.BackColor = SystemColors.Control;
+        }
+
+        private void InicializarBotonesDeteccion()
+        {
+            foreach (var obj in cocoObjects)
+            {
+                string nombre = obj.Key;
+                int id = obj.Value;
+
+                var btn = new Button
+                {
+                    Text = nombre,
+                    Size = new Size(75, 28),
+                    Margin = new Padding(3)
+                };
+
+                btn.Click += (s, e) =>
+                {
+                    if (selectedObjectIds.Contains(id))
+                    {
+                        selectedObjectIds.Remove(id);
+                        btn.BackColor = SystemColors.Control; // ✅ deseleccionado
+                    }
+                    else
+                    {
+                        selectedObjectIds.Add(id);
+                        btn.BackColor = Color.LightGreen;     // ✅ seleccionado
+                    }
+                    EnviarDeteccion(); // envía lista actualizada
+                };
+
+                detectionPanel.Controls.Add(btn);
+            }
+        }
 
         //COSAS MAPA
         private void InicializarMapa()

@@ -77,6 +77,8 @@
             this.stopVideoBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
             this.galleryBtn = new System.Windows.Forms.Button();
+            this.detectionPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.detectionPanel.AutoScroll = true;
             ((System.ComponentModel.ISupportInitialize)(this.headingTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.velocidadTrackBar)).BeginInit();
             this.groupBox4.SuspendLayout();
@@ -619,7 +621,7 @@
             // 
             // startVideoBtn
             // 
-            this.startVideoBtn.Location = new System.Drawing.Point(429, 818);
+            this.startVideoBtn.Location = new System.Drawing.Point(429, 813);
             this.startVideoBtn.Name = "startVideoBtn";
             this.startVideoBtn.Size = new System.Drawing.Size(130, 40);
             this.startVideoBtn.TabIndex = 49;
@@ -629,7 +631,7 @@
             // 
             // stopVideoBtn
             // 
-            this.stopVideoBtn.Location = new System.Drawing.Point(429, 870);
+            this.stopVideoBtn.Location = new System.Drawing.Point(575, 813);
             this.stopVideoBtn.Name = "stopVideoBtn";
             this.stopVideoBtn.Size = new System.Drawing.Size(130, 40);
             this.stopVideoBtn.TabIndex = 50;
@@ -639,7 +641,7 @@
             // 
             // captureBtn
             // 
-            this.captureBtn.Location = new System.Drawing.Point(690, 818);
+            this.captureBtn.Location = new System.Drawing.Point(724, 813);
             this.captureBtn.Name = "captureBtn";
             this.captureBtn.Size = new System.Drawing.Size(130, 40);
             this.captureBtn.TabIndex = 51;
@@ -649,7 +651,7 @@
             // 
             // galleryBtn
             // 
-            this.galleryBtn.Location = new System.Drawing.Point(690, 872);
+            this.galleryBtn.Location = new System.Drawing.Point(874, 813);
             this.galleryBtn.Name = "galleryBtn";
             this.galleryBtn.Size = new System.Drawing.Size(130, 40);
             this.galleryBtn.TabIndex = 52;
@@ -657,11 +659,19 @@
             this.galleryBtn.UseVisualStyleBackColor = true;
             this.galleryBtn.Click += new System.EventHandler(this.galleryBtn_Click);
             // 
+            // detectionPanel
+            // 
+            this.detectionPanel.Location = new System.Drawing.Point(429, 892);
+            this.detectionPanel.Name = "detectionPanel";
+            this.detectionPanel.Size = new System.Drawing.Size(575, 119);
+            this.detectionPanel.TabIndex = 53;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1037, 1055);
+            this.Controls.Add(this.detectionPanel);
             this.Controls.Add(this.galleryBtn);
             this.Controls.Add(this.captureBtn);
             this.Controls.Add(this.stopVideoBtn);
@@ -755,6 +765,7 @@
         private System.Windows.Forms.Button stopVideoBtn;
         private System.Windows.Forms.Button captureBtn;
         private System.Windows.Forms.Button galleryBtn;
+        private System.Windows.Forms.FlowLayoutPanel detectionPanel;
     }
 }
 
