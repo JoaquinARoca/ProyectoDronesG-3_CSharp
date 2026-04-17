@@ -34,8 +34,10 @@ def on_message(cli, userdata, message):
     sending_topic = "autopilotServiceDemo/" + origin # lo necesitaré para enviar las respuestas
 
     if command == 'connect':
-        connection_string = 'tcp:127.0.0.1:5763'
-        baud = 115200
+        #en TERMINAL: mavproxy --master=com5 --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551
+
+        connection_string = 'udp:127.0.0.1:14551'#'COM5' #tcp:127.0.0.1:5763
+        baud = 57600 #115200
         dron.connect(connection_string, baud, freq=10)
         publish_event('connected')
         print("connected")

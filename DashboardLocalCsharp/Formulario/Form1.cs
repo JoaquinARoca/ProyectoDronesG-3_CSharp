@@ -110,7 +110,12 @@ namespace Formulario
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error conectando al broker MQTT: " + ex.Message);
+                string errorReal = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errorReal += "\nDetalle interno: " + ex.InnerException.Message;
+                }
+                MessageBox.Show("Error conectando al broker MQTT: \n" + errorReal);
             }
 
 

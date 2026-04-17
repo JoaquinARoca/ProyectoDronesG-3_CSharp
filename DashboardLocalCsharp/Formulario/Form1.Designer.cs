@@ -72,13 +72,11 @@
             this.AltChangeLbl = new System.Windows.Forms.Label();
             this.mapPanel = new System.Windows.Forms.Panel();
             this.videoPictureBox = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.startVideoBtn = new System.Windows.Forms.Button();
             this.stopVideoBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
             this.galleryBtn = new System.Windows.Forms.Button();
             this.detectionPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.detectionPanel.AutoScroll = true;
             ((System.ComponentModel.ISupportInitialize)(this.headingTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.velocidadTrackBar)).BeginInit();
             this.groupBox4.SuspendLayout();
@@ -515,7 +513,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1037, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1037, 30);
             this.menuStrip1.TabIndex = 33;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -610,15 +608,6 @@
             this.videoPictureBox.TabIndex = 47;
             this.videoPictureBox.TabStop = false;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(0, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 48;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // startVideoBtn
             // 
             this.startVideoBtn.Location = new System.Drawing.Point(429, 813);
@@ -661,6 +650,7 @@
             // 
             // detectionPanel
             // 
+            this.detectionPanel.AutoScroll = true;
             this.detectionPanel.Location = new System.Drawing.Point(429, 892);
             this.detectionPanel.Name = "detectionPanel";
             this.detectionPanel.Size = new System.Drawing.Size(575, 119);
@@ -676,7 +666,6 @@
             this.Controls.Add(this.captureBtn);
             this.Controls.Add(this.stopVideoBtn);
             this.Controls.Add(this.startVideoBtn);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.videoPictureBox);
             this.Controls.Add(this.mapPanel);
             this.Controls.Add(this.label8);
@@ -760,7 +749,6 @@
         private System.Windows.Forms.Label AltChangeLbl;
         private System.Windows.Forms.Panel mapPanel;
         private System.Windows.Forms.PictureBox videoPictureBox;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button startVideoBtn;
         private System.Windows.Forms.Button stopVideoBtn;
         private System.Windows.Forms.Button captureBtn;
